@@ -1,54 +1,45 @@
+package in.ganeshsharma.EncryptionSystem;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import javax.swing.*;
+import java.awt.*;
 
-import org.apache.commons.codec.binary.Base64;
+public class Main {
+    public Main() {
+        JFrame frame = new JFrame("Encryption & Decryption Software");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setSize(screenSize.width / 2, screenSize.height / 2);
+        frame.setLocation(screenSize.width / 4, screenSize.height / 4);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-public class Encryptor {
-    public static String encrypt(String key, String initVector, String value) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+        JPanel panel1 = createColoredPanel(Color.YELLOW);
+        JPanel panel2 = createColoredPanel(Color.GREEN);
+        JPanel panel3 = createColoredPanel(Color.YELLOW);
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+        ImageIcon image = new ImageIcon("wait.GIF");
+        JLabel im = new JLabel(image);
+        JLabel msg = new JLabel("LOADING............");
 
-            byte[] encrypted = cipher.doFinal(value.getBytes());
-            System.out.println("encrypted string: "
-                    + Base64.encodeBase64String(encrypted));
+        panel1.add(msg);
+        panel2.add(im);
 
-            return Base64.encodeBase64String(encrypted);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        frame.add(panel1, BorderLayout.NORTH);
+        frame.add(panel2, BorderLayout.CENTER);
+        frame.add(panel3, BorderLayout.SOUTH);
 
-        return null;
+        new Cryptography();
     }
 
-    public static String decrypt(String key, String initVector, String encrypted) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
-            byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
-
-            return new String(original);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
+    public static void main(String[] args) throws Exception {
+        SwingUtilities.invokeLater(() -> {
+            new Main();
+        });
     }
 
-    public static void main(String[] args) {
-        String key = "Bar12345Bar12345"; // 128 bit key
-        String initVector = "RandomInitVector"; // 16 bytes IV
-
-        System.out.println(decrypt(key, initVector,
-                encrypt(key, initVector, "Hello World")));
+    private JPanel createColoredPanel(Color color) {
+        JPanel panel = new JPanel();
+        panel.setPreferredSize(new Dimension(100, 100));
+        panel.setBackground(color);
+        return panel;
     }
 }
